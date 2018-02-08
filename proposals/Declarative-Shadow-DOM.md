@@ -79,27 +79,27 @@ To create a shadow root declaratively, the `<shadowroot>` element should be used
 
 ### Behavior
 
-Once parsed should create shadow root in parent element - **host**, and append its own content into there. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-declarative-shadow-dom-test-html-L8-L12))
+Once parsed should create shadow root in parent element - **host**, and append its own content into there. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-00-create-shadow-root-html))
 
-- `host.innerHTML = '<shadowroot>shadow DOM</shadowroot>light DOM'` gets parsed and processed as declarative Shadow DOM and light DOM. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-declarative-shadow-dom-test-html-L14-L19))
+- `host.innerHTML = '<shadowroot>shadow DOM</shadowroot>light DOM'` gets parsed and processed as declarative Shadow DOM and light DOM. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-01-innerhtml-html))
 
-- Once parsed `<shadowroot>` must not appear in `host.childNodes`, nor `host.children` list. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-declarative-shadow-dom-test-html-L21-L27))
+- Once parsed `<shadowroot>` must not appear in `host.childNodes`, nor `host.children` list. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-02-not-in-childnodes-html))
 
   To access shadow root imperatively, use already settled API `host.shadowRoot`, `host.shadowRoot.childNodes`.
 
-- Once parsed `<shadowroot>` must not appear in `host.innerHTML`.
+- Once parsed `<shadowroot>` must not appear in `host.innerHTML`. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-03-not-in-innerhtml-html))
 
   To access shadow root imperatively, use already settled API `host.shadowRoot`, `host.shadowRoot.innerHTML`.
 
 
-- `host.appendChild(document.createElement('shadowroot'))` does append `HTMLUnknownElement`. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-declarative-shadow-dom-test-html-L29-L39))
+- `host.appendChild(document.createElement('shadowroot'))` does append `HTMLUnknownElement`. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-04-inert-for-imperative-html))
 
   To imperatively attach a shadow root, use `host.attachShadow`.
   > Note, consider throwing an error
 
-- It should have `mode` attribute equal to `open` or `closed`, otherwise it is processed as `HTMLUnknownElement` ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-declarative-shadow-dom-test-html-L41-L67))
+- It should have `mode` attribute equal to `open` or `closed`, otherwise it is processed as `HTMLUnknownElement` ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-05-mode-attribute-html))
 
-- Scripts in `<shadowroot>` are processed:
+- Scripts in `<shadowroot>` are processed: ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-06-scripts-are-executed-html))
 
     >Note,  Given the `<script>`s added via `.innerHTML` are not executed. The only way to execute the scripts is to have them declaratively stated in the document in first place (in the body or in a template).
 
@@ -108,7 +108,7 @@ Once parsed should create shadow root in parent element - **host**, and append i
     > Note, `document.write` should not "break" the encapsulation of closed shadow roots - this script was consciously, declaratively put there. Therefore, it "breaks" it no further than a custom element put into shadow root could break it.
 
 
-- calling `attachShadow` on the element that already has the shadow root attached by declarative `<shadowroot>` must behave exactly the same as for double imperative call.
+- calling `attachShadow` on the element that already has the shadow root attached by declarative `<shadowroot>` must behave exactly the same as for double imperative call. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-06-scripts-are-executed-html))
 
     For CustomElement upgrades, one may consider
 
@@ -119,10 +119,10 @@ Once parsed should create shadow root in parent element - **host**, and append i
     }
     this.shadowRoot.innerHTML = 'custom element specific shadow';
     ```
-- `<shadowroot>` element cannot be used in the elements that cannot have shadow root (see [the list for imperative API](https://dom.spec.whatwg.org/#dom-element-attachshadow)), in such cases it becomes `HTMLUnknownElement`
+- `<shadowroot>` element cannot be used in the elements that cannot have shadow root (see [the list for imperative API](https://dom.spec.whatwg.org/#dom-element-attachshadow)), in such cases it becomes `HTMLUnknownElement` ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-08-in-blacklisted-element-html))
     > Note, consider `throw a "NotSupportedError" DOMException.`
 
-- `<shadowroot>` element used in the elements that already have a shadow root must not try to attach Shadow Root and must not appear in `childNodes`.
+- `<shadowroot>` element used in the elements that already have a shadow root must not try to attach Shadow Root and must not appear in `childNodes`. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-09-in-element-w-shadow-html))
     > Note, non-normative: it is processed without an error but does nothing.
 
     #### Example
@@ -150,14 +150,14 @@ Once parsed should create shadow root in parent element - **host**, and append i
     ```
     Should render "Hello World" regardless if custom element definition was loaded before, after or not at all. Also, in all three cases `helloElement.children` consist only of text nodes `"\n\t","\n\tWord\n"`.
 
-- Another (valid) `<shadowroot mode="open|closed">` inside the node that already has a parsed `<shadowroot>`, should make the same effect as `<shadowroot>` in the element that already has shadow root.
+- Another (valid) `<shadowroot mode="open|closed">` inside the node that already has a parsed `<shadowroot>`, should make the same effect as `<shadowroot>` in the element that already has shadow root. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-10-another-shadowroot-html))
     > Note, non-normative: it is processed without an error but does nothing.- There should be only one `<shadowroot>` child element, other should be treated as `HTMLUnknownElement`
     > Note, we may consider appending to the existing shadow root, but then we will need to bother about different `mode`s (disregard if different)
 
 
 - `<shadowroot>` can be used inside the content of a `<template>`. ~~It's also processed during parsing of such template.~~
  `<template>` is inert, therefore it does not attach a shadow root to its parent element until template's content is connected to the document. By that time it's available in `.childNodes` as `HTMLShadowRootElement`.
-   - `HTMLShadowRootElement` derives from the `HTMLElement` interface, but without implementing any additional properties or methods.
+   - `HTMLShadowRootElement` derives from the `HTMLElement` interface, but without implementing any additional properties or methods. ([test](https://gist.github.com/tomalec/a20af4eee86640defdc7aeccccc78c1c#file-11-in-template-html))
 
    > Note, non-normative: `<template>` makes all elements including `<shadowroot>` inert.
 
